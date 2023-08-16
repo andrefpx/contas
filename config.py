@@ -1,3 +1,4 @@
+DEBUG = True
 USERNAME='root'
 PASSWORD = 'admin123#'
 SERVER= 'localhost'

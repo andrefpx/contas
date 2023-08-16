@@ -5,6 +5,10 @@ from ..entidades import conta
 from ..services import conta_service
 from api import api
 class ContaList(Resource):
+    def get(self):
+        contas = conta_service.listar_contas()
+        cs = conta_schema.ContaSchema(many=True)
+        return make_response(cs.jsonify(contas),201)
     def post(self):
         cs = conta_schema.ContaSchema()
         validate = cs.validate(request.json) # valida o schema , caso não esteja de acordo a requisição não irá passar.
@@ -16,7 +20,14 @@ class ContaList(Resource):
             valor = request.json["valor"]
             conta_nova = conta.Conta(nome=nome,resumo=resumo,valor=valor)
             resultado = conta_service.cadastrar_conta(conta_nova)
-            return make_response(jsonify(cs.resultado),201)
+            return make_response(cs.jsonify(resultado),201)
+class ContaDetail(Resource):
+    def get(self,id):
+        conta = conta_service.listar_conta_id(id)
+        if conta is None:
+            return make_response(jsonify("Conta não encontrada"),404)
+        cs = conta_schema.ContaSchema()
+        return make_response(cs.jsonify(conta),200)
 api.add_resource(ContaList,'/contas')
-
+api.add_resource(ContaDetail,'/contas/<int:id>')
 
