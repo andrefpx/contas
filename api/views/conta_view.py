@@ -4,11 +4,16 @@ from flask import request,make_response,jsonify
 from ..entidades import conta
 from ..services import conta_service
 from api import api
+from flask_jwt_extended import jwt_required
+
 class ContaList(Resource):
+    @jwt_required()
     def get(self):
         contas = conta_service.listar_contas()
         cs = conta_schema.ContaSchema(many=True)
         return make_response(cs.jsonify(contas),201)
+
+    @jwt_required()
     def post(self):
         cs = conta_schema.ContaSchema()
         validate = cs.validate(request.json) # valida o schema , caso não esteja de acordo a requisição não irá passar.
@@ -22,18 +27,23 @@ class ContaList(Resource):
             resultado = conta_service.cadastrar_conta(conta_nova)
             return make_response(cs.jsonify(resultado),201)
 class ContaDetail(Resource):
+    @jwt_required()
     def get(self,id):
         conta = conta_service.listar_conta_id(id)
         if conta is None:
             return make_response(jsonify("Conta não encontrada"),404)
         cs = conta_schema.ContaSchema()
         return make_response(cs.jsonify(conta),200)
+
+    @jwt_required()
     def delete(self,id):
         conta = conta_service.listar_conta_id(id)
         if conta is None:
             return make_response(jsonify("Conta não encontrada"), 404)
         conta_service.exclui_conta(conta)
         return  make_response(jsonify(""),204)
+
+    @jwt_required()
     def put(self,id):
         conta_bd = conta_service.listar_conta_id(id)
         if conta_bd is None:
