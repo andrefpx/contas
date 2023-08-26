@@ -23,10 +23,8 @@ class ContaList(Resource):
             return make_response(jsonify(validate),400)
         else:
             nome = request.json["nome"]
-            resumo = request.json["resumo"]
             valor = request.json["valor"]
-            usuario = get_jwt_identity()
-            conta_nova = conta.Conta(nome=nome,resumo=resumo,valor=valor,usuario=usuario)
+            conta_nova = conta.Conta(nome=nome,valor=valor)
             resultado = conta_service.cadastrar_conta(conta_nova)
             return make_response(cs.jsonify(resultado),201)
 class ContaDetail(Resource):
@@ -51,9 +49,8 @@ class ContaDetail(Resource):
             return make_response(jsonify(validate),400)
         else:
             nome = request.json['nome']
-            resumo = request.json['resumo']
             valor = request.json['valor']
-            conta_nova = conta.Conta(nome=nome,resumo=resumo,valor=valor)
+            conta_nova = conta.Conta(nome=nome,valor=valor)
             resultado = conta_service.atualizar_conta(conta_bd,conta_nova)
             return make_response(cs.jsonify(resultado),201)
 api.add_resource(ContaList,'/contas')
