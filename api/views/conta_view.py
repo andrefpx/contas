@@ -8,14 +8,11 @@ from flask_jwt_extended import jwt_required,get_jwt_identity
 from ..decorators.autorizacao import user_conta
 from ..decorators.api_key import require_apikey
 class ContaList(Resource):
-    @jwt_required()
     def get(self):
-        usuario_logado = get_jwt_identity()
-        contas = conta_service.listar_contas(usuario=usuario_logado)
+        contas = conta_service.listar_contas()
         cs = conta_schema.ContaSchema(many=True)
         return make_response(cs.jsonify(contas),201)
 
-    @jwt_required()
     def post(self):
         cs = conta_schema.ContaSchema()
         validate = cs.validate(request.json) # valida o schema , caso não esteja de acordo a requisição não irá passar.
@@ -28,19 +25,17 @@ class ContaList(Resource):
             resultado = conta_service.cadastrar_conta(conta_nova)
             return make_response(cs.jsonify(resultado),201)
 class ContaDetail(Resource):
-    @user_conta
+
     def get(self,id):
         conta = conta_service.listar_conta_id(id)
         cs = conta_schema.ContaSchema()
         return make_response(cs.jsonify(conta),200)
 
-    @user_conta
     def delete(self,id):
         conta = conta_service.listar_conta_id(id)
         conta_service.exclui_conta(conta)
         return  make_response(jsonify(""),204)
 
-    @user_conta
     def put(self,id):
         conta_bd = conta_service.listar_conta_id(id)
         cs = conta_schema.ContaSchema()
